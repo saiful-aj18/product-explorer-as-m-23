@@ -3,7 +3,7 @@ import ProductCard from "../components/ProductCard";
 import CategoryFilter from "../components/CategoryFilter";
 import useDebounce from "../hooks/useDebounce";
 
-const Products = ({ searchTerm, setSearchTerm }) => {
+const Products = ({ searchTerm  }) => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(["all"]);
   const [selectedCategory, setSelectedCategory] = useState("all");
