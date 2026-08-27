@@ -14,7 +14,7 @@ const ProductCard = ({ product }) => {
 
       <div className="p-5">
 
-        <p className="text-sm text-blue-400 capitalize mb-2">
+        <p className="text-sm text-cyan-400 capitalize mb-2">
           {product.category}
         </p>
 
