@@ -1,15 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import CategoryFilter from "../components/CategoryFilter";
+import useDebounce from "../hooks/useDebounce";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState(["all"]);
   const [selectedCategory, setSelectedCategory] = useState("all");
 
+  const [searchTerm, setSearchTerm] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // Debounced search value
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -28,10 +35,11 @@ const Products = () => {
 
         setProducts(data.products);
 
-        // Get unique categories
         const uniqueCategories = [
           "all",
-          ...new Set(data.products.map((product) => product.category)),
+          ...new Set(
+            data.products.map((product) => product.category)
+          ),
         ];
 
         setCategories(uniqueCategories);
@@ -45,14 +53,23 @@ const Products = () => {
     fetchProducts();
   }, []);
 
-  // Filter products based on selected category
-  const filteredProducts =
-    selectedCategory === "all"
-      ? products
-      : products.filter(
-          (product) => product.category === selectedCategory
-        );
+  // Filter products
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const matchesCategory =
+        selectedCategory === "all" ||
+        product.category === selectedCategory;
 
+      const matchesSearch =
+        product.title
+          .toLowerCase()
+          .includes(debouncedSearch.toLowerCase());
+
+      return matchesCategory && matchesSearch;
+    });
+  }, [products, selectedCategory, debouncedSearch]);
+
+  // Loading
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -63,6 +80,7 @@ const Products = () => {
     );
   }
 
+  // Error
   if (error) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center px-4">
@@ -77,15 +95,34 @@ const Products = () => {
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="max-w-7xl mx-auto px-4 py-10">
 
-        {/* Page Header */}
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold">
             Explore Products
           </h1>
 
           <p className="text-slate-400 mt-2">
-            Browse our collection of amazing products.
+            Find your favorite products easily.
           </p>
+        </div>
+
+        {/* Search Box */}
+        <div className="mb-6">
+          <div className="relative max-w-xl">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(event) =>
+                setSearchTerm(event.target.value)
+              }
+              placeholder="Search products by title..."
+              className="w-full px-5 py-3 pl-12 rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-lg">
+              🔍
+            </span>
+          </div>
         </div>
 
         {/* Category Filter */}
@@ -96,15 +133,29 @@ const Products = () => {
         />
 
         {/* Product Count */}
-        <p className="text-slate-400 mb-6">
-          Showing {filteredProducts.length} products
-        </p>
+        <div className="mb-6">
+          <p className="text-slate-400">
+            Showing{" "}
+            <span className="text-white font-semibold">
+              {filteredProducts.length}
+            </span>{" "}
+            products
+          </p>
+        </div>
 
-        {/* Products Grid */}
+        {/* Products */}
         {filteredProducts.length === 0 ? (
           <div className="text-center py-20">
-            <p className="text-xl text-slate-400">
-              No products found.
+            <div className="text-5xl mb-4">
+              🔍
+            </div>
+
+            <h2 className="text-2xl font-semibold mb-2">
+              No products found
+            </h2>
+
+            <p className="text-slate-400">
+              Try another search or category.
             </p>
           </div>
         ) : (
