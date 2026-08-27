@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Products from "./pages/Products";
@@ -20,13 +21,27 @@ function Home() {
 }
 
 function App() {
+  const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <BrowserRouter>
-      <Navbar />
+      <Navbar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+      />
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
+
+        <Route
+          path="/products"
+          element={
+            <Products
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
