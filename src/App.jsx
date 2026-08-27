@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import Products from "./pages/Products";
 import "./App.css";
 
 function Home() {
@@ -13,18 +14,6 @@ function Home() {
         <p className="text-slate-400 text-lg">
           Explore our collection of amazing products.
         </p>
-      </div>
-    </div>
-  );
-}
-
-function Products() {
-  return (
-    <div className="min-h-screen bg-slate-950 text-white">
-      <div className="max-w-7xl mx-auto px-4 py-16">
-        <h1 className="text-4xl font-bold">
-          Products
-        </h1>
       </div>
     </div>
   );
